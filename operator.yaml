@@ -1,0 +1,29 @@
+/go:
+  post:
+    requestBody:
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              message:
+                $ref: ‘#/components/schemas/Message’
+              actions:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    url:
+                      type: string
+                    options:
+                      type: object
+            additionalProperties: false
+            required:
+              - message
+              - actions
+    responses:
+      '200':
+        content:
+          application/json:
+            schema:
+              $ref: ‘#/components/schemas/Message’

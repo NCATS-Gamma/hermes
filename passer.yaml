@@ -1,0 +1,22 @@
+/pass:
+  post:
+    requestBody:
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              message:
+                $ref: ‘#/components/schemas/Message’
+              options:
+                type: object
+            additionalProperties: false
+            required:
+              - message
+              - options
+    responses:
+      '200':
+        content:
+          application/json:
+            schema:
+              $ref: ‘#/components/schemas/Message’
