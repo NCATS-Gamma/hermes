@@ -11,7 +11,7 @@ handlers:
     class: logging.handlers.RotatingFileHandler
     level: DEBUG
     formatter: default
-    filename: "/Users/Patrick/Documents/CoVar/projects/ncats/hermes/logs/default.log"
+    filename: "logs/default.log"
     mode: a
     encoding: utf-8
     maxBytes: 1000000
