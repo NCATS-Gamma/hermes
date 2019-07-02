@@ -7,3 +7,5 @@ install:
   - pip install -r requirements-test.txt
 script: 
   - PYTHONPATH=. pytest -s --cov=hermes --cov-report term-missing tests/test_hermes.py
+after_script:
+  - codecov
