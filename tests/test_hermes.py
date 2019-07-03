@@ -1,10 +1,8 @@
 """Test hermes."""
-import hashlib
-import json
 import pytest
 from aiohttp import web
 from hermes.server import setup
-from hermes.core import run_job
+from hermes.core import run_job, get_job_id
 
 
 async def plus(request):
@@ -46,7 +44,7 @@ async def test_hermes(cli):
     }
 
     # run job
-    job_id = hashlib.md5(json.dumps(test_input).encode('utf-8')).hexdigest()
+    job_id = get_job_id(test_input['message'], test_input['actions'])
     await run_job(test_input, job_id)
 
     # call /run endpoint - job should exist and be skipped

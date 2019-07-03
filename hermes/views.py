@@ -5,6 +5,7 @@ import logging
 import os
 
 from aiohttp import web
+import redis
 
 from hermes.core import queue_job, CACHE_DIR
 
@@ -21,10 +22,14 @@ async def index(request):
 async def fetch(request):
     """Fetch-message endpoint."""
     job_id = request.match_info['job_id']
-    filename = job_id + '.json'
+    r = redis.Redis(decode_responses=True)
+    if not r.exists(job_id):
+        return web.HTTPNotFound(text='Results are unavailable.')
+    output_id = r.get(job_id)
+    filename = output_id + '.json'
     try:
         with open(os.path.join(CACHE_DIR, filename), 'r') as f:
             response = json.load(f)
     except FileNotFoundError:
-        return web.HTTPNotFound()
+        return web.HTTPNotFound(text='Results are unavailable.')
     return web.json_response(response, dumps=functools.partial(json.dumps, indent=4))
