@@ -6,6 +6,7 @@ install:
   - pip install -r requirements.txt
   - pip install -r requirements-test.txt
   - mkdir logs
+  - mkdir cache
 script: 
   - PYTHONPATH=. pytest -s --cov=hermes --cov-report term-missing tests/test_hermes.py
 after_script:
