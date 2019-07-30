@@ -9,7 +9,8 @@ install:
   - pip install -r requirements-test.txt
   - mkdir logs
   - mkdir cache
+  - export PYTHONPATH=$(pwd)
 script: 
-  - PYTHONPATH=. pytest -s --cov=hermes --cov-report term-missing
+  - pytest --cov=hermes --cov-report term-missing
 after_script:
   - codecov
