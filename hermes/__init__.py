@@ -1,1 +1,0 @@
-"""Required to use pkg_resources to find logging.yaml."""

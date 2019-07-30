@@ -2,8 +2,6 @@
 import logging.config
 import importlib.resources as pkg_resources
 import yaml
-import sys
-print(sys.path)
 
 from aiohttp import web
 
