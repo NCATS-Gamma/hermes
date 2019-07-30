@@ -9,7 +9,6 @@ setup(
     url='https://github.com/NCATS-Gamma/hermes',
     description='Pipelining for NCATS Translator services',
     packages=['hermes'],
-    package_data={'hermes': ['logging.yaml']},
     include_package_data=True,
     zip_safe=False,
     license='MIT',
