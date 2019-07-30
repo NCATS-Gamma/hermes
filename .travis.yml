@@ -5,12 +5,8 @@ python:
 services:
   - redis-server
 install:
-  - pip install -r requirements.txt
-  - pip install -r requirements-test.txt
+  - pip install tox
   - mkdir logs
   - mkdir cache
-  - export PYTHONPATH=$(pwd)
 script: 
-  - pytest --cov=hermes --cov-report term-missing
-after_script:
-  - codecov
+  - tox
