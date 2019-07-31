@@ -31,5 +31,7 @@ async def get_result(request):
         with open(os.path.join(CACHE_DIR, filename), 'r') as f:
             response = json.load(f)
     except FileNotFoundError:
+        # Redis is out-of-sync with file system. Remove the offending key.
+        r.delete(job_id)
         return web.HTTPNotFound(text='Results are unavailable.')
     return web.json_response(response, dumps=functools.partial(json.dumps, indent=4))
