@@ -1,8 +1,11 @@
 """Test hermes."""
+import copy
+import os
 import pytest
+import redis
 from aiohttp import web
 from hermes.server import app
-from hermes.core import run_job, get_job_id
+from hermes.core import run_job, get_job_id, CACHE_DIR
 
 
 async def plus(request):
@@ -42,10 +45,10 @@ async def test_hermes(cli):
     await run_job(test_input, job_id)
 
     test_input['actions'].append({
-                'url': f'http://{cli.server.host}:{cli.server.port}/plus',
-                'options': {
-                    'value': 2
-                }
+        'url': f'http://{cli.server.host}:{cli.server.port}/plus',
+        'options': {
+            'value': 2
+        }
     })
 
     # run job
@@ -63,3 +66,38 @@ async def test_hermes(cli):
     result = await response.json()
 
     assert result['value'] == 3
+
+
+async def test_missing(cli):
+    """Test fetching missing result."""
+    response = await cli.get(f'/result/nope')
+    assert response.status == 404
+
+
+async def test_lost(cli):
+    """Test fetching lost result."""
+    test_input = {
+        'message': {
+            'value': 0
+        },
+        'actions': [
+            {
+                'url': f'http://{cli.server.host}:{cli.server.port}/plus',
+                'options': {
+                    'value': 1
+                }
+            }
+        ]
+    }
+
+    # run job
+    job_id = get_job_id(test_input['message'], test_input['actions'])
+    await run_job(test_input, job_id)
+
+    # remove result file
+    r = redis.Redis(decode_responses=True)
+    result_id = r.get(job_id)
+    os.remove(os.path.join(CACHE_DIR, result_id + '.json'))
+
+    response = await cli.get(f'/result/{job_id}')
+    assert response.status == 404
