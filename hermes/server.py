@@ -5,7 +5,7 @@ import yaml
 
 from aiohttp import web
 
-from hermes.routes import setup_routes
+from hermes.views import index, fetch
 
 logger = logging.getLogger('hermes')
 
@@ -19,5 +19,6 @@ def setup():
 
     # setup app
     app = web.Application()
-    setup_routes(app)
+    app.router.add_post('/run', index)
+    app.router.add_get('/fetch/{job_id}', fetch)
     return app
