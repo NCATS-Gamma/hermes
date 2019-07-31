@@ -5,7 +5,7 @@ import yaml
 
 from aiohttp import web
 
-from hermes.views import run, get_result
+from hermes.handlers import run, get_result
 
 logger = logging.getLogger('hermes')
 
