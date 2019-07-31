@@ -26,7 +26,12 @@ async def run_job(body, job_id):
             if r.exists(step_id):
                 logger.debug('Step %s is cached. Fetching...', step_id)
                 message_id = r.get(step_id)
+                message = None
                 continue
+            elif message is None:
+                filename = message_id + '.json'
+                with open(os.path.join(CACHE_DIR, filename), 'r') as f:
+                    message = json.load(f)
             url = action['url']
             options = action['options']
             inputs = {

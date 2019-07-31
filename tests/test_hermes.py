@@ -16,8 +16,9 @@ async def plus(request):
 @pytest.fixture
 def cli(loop, aiohttp_client):
     """Test server."""
-    app.router.add_post('/plus', plus)
-    return loop.run_until_complete(aiohttp_client(app))
+    _app = copy.deepcopy(app)
+    _app.router.add_post('/plus', plus)
+    return loop.run_until_complete(aiohttp_client(_app))
 
 
 async def test_hermes(cli):
@@ -32,15 +33,20 @@ async def test_hermes(cli):
                 'options': {
                     'value': 1
                 }
-            },
-            {
+            }
+        ]
+    }
+
+    # run first task
+    job_id = get_job_id(test_input['message'], test_input['actions'])
+    await run_job(test_input, job_id)
+
+    test_input['actions'].append({
                 'url': f'http://{cli.server.host}:{cli.server.port}/plus',
                 'options': {
                     'value': 2
                 }
-            }
-        ]
-    }
+    })
 
     # run job
     job_id = get_job_id(test_input['message'], test_input['actions'])
