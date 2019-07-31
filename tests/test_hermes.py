@@ -52,7 +52,7 @@ async def test_hermes(cli):
     job_id = await response.text()
 
     # fetch result
-    response = await cli.get(f'/fetch/{job_id}')
+    response = await cli.get(f'/result/{job_id}')
 
     assert response.status == 200
     result = await response.json()

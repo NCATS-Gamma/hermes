@@ -12,15 +12,15 @@ from hermes.core import queue_job, CACHE_DIR
 logger = logging.getLogger('hermes')
 
 
-async def index(request):
-    """Index view."""
+async def run(request):
+    """Run pipeline."""
     body = await request.json()
     job_id = await queue_job(body)
     return web.Response(text=job_id)
 
 
-async def fetch(request):
-    """Fetch-message endpoint."""
+async def get_result(request):
+    """Fetch result of pipeline."""
     job_id = request.match_info['job_id']
     r = redis.Redis(decode_responses=True)
     if not r.exists(job_id):
