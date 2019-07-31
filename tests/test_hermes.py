@@ -1,4 +1,5 @@
 """Test hermes."""
+import asyncio
 import copy
 import os
 import pytest
@@ -26,6 +27,7 @@ def cli(loop, aiohttp_client):
 
 async def test_hermes(cli):
     """Test hermes."""
+    # generate 1-action job
     test_input = {
         'message': {
             'value': 0
@@ -40,10 +42,16 @@ async def test_hermes(cli):
         ]
     }
 
-    # run first task
-    job_id = get_job_id(test_input['message'], test_input['actions'])
-    await run_job(test_input, job_id)
+    # run 1-action job
+    response = await cli.post('/run', json=test_input)
+    job_id = await response.text()
 
+    # wait for job to finish
+    r = redis.Redis(decode_responses=True)
+    while r.get(job_id) is None:
+        await asyncio.sleep(1)
+
+    # add second action
     test_input['actions'].append({
         'url': f'http://{cli.server.host}:{cli.server.port}/plus',
         'options': {
@@ -51,20 +59,25 @@ async def test_hermes(cli):
         }
     })
 
-    # run job
-    job_id = get_job_id(test_input['message'], test_input['actions'])
-    await run_job(test_input, job_id)
+    # run 2-action job
+    response = await cli.post('/run', json=test_input)
+    job_id = await response.text()
 
-    # call /run endpoint - job should exist and be skipped
+    # wait for job to finish
+    r = redis.Redis(decode_responses=True)
+    while r.get(job_id) is None:
+        await asyncio.sleep(0.1)
+
+    # run job again - should be skipped
     response = await cli.post('/run', json=test_input)
     job_id = await response.text()
 
     # fetch result
     response = await cli.get(f'/result/{job_id}')
 
+    # validate result
     assert response.status == 200
     result = await response.json()
-
     assert result['value'] == 3
 
 
