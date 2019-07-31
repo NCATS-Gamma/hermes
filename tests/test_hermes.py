@@ -1,7 +1,7 @@
 """Test hermes."""
 import pytest
 from aiohttp import web
-from hermes.server import setup
+from hermes.server import app
 from hermes.core import run_job, get_job_id
 
 
@@ -16,7 +16,6 @@ async def plus(request):
 @pytest.fixture
 def cli(loop, aiohttp_client):
     """Test server."""
-    app = setup()
     app.router.add_post('/plus', plus)
     return loop.run_until_complete(aiohttp_client(app))
 
