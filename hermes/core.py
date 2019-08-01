@@ -55,6 +55,11 @@ async def queue_job(arg):
     actions = arg['actions']
     input_id = hash_message(message)
     job_id = get_job_id(input_id, actions)
+    with open(os.path.join(CACHE_DIR, job_id + '.json'), 'w') as f:
+        json.dump({
+            'message_id': input_id,
+            'actions': actions
+        }, f, indent=4)
     r = redis.Redis(decode_responses=True)
     if r.exists(job_id):
         output_id = r.get(job_id)

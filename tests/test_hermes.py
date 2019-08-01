@@ -114,3 +114,35 @@ async def test_lost(cli):
 
     response = await cli.get(f'/result/{job_id}')
     assert response.status == 404
+
+
+async def test_job_cache(cli):
+    """Test fetching job."""
+    test_input = {
+        'message': {
+            'value': 0
+        },
+        'actions': [
+            {
+                'url': f'http://{cli.server.host}:{cli.server.port}/plus',
+                'options': {
+                    'value': 1
+                }
+            }
+        ]
+    }
+
+    # run 1-action job
+    response = await cli.post('/run', json=test_input)
+    job_id = await response.text()
+
+    # wait for job to finish
+    r = redis.Redis(decode_responses=True)
+    while r.get(job_id) is None:
+        await asyncio.sleep(1)
+
+    response = await cli.get(f'/job/{job_id}')
+    assert response.status == 200
+
+    response = await cli.get(f'/job/nope')
+    assert response.status == 404
