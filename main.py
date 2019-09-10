@@ -1,6 +1,6 @@
 """Main."""
 from aiohttp import web
-from hermes.server import setup
+from hermes.server import app
 
 
-web.run_app(setup(), port=8081)
+web.run_app(app, port=8081)
