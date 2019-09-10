@@ -16,7 +16,7 @@ CACHE_DIR = 'cache/'
 
 async def run_job(body, job_id):
     """Run job."""
-    logger.debug('Executing job %s...', job_id)
+    logger.debug('Executing %7s...', job_id)
     message = body['message']
     message_id = hash_message(message)
     r = redis.Redis(
@@ -28,7 +28,7 @@ async def run_job(body, job_id):
         for action in body['actions']:
             step_id = get_job_id(message_id, action)
             if r.exists(step_id):
-                logger.debug('Step %s is cached. Fetching...', step_id)
+                logger.debug('Step %7s is cached. Fetching...', step_id)
                 message_id = r.get(step_id)
                 message = None
                 continue
@@ -42,7 +42,7 @@ async def run_job(body, job_id):
                 'message': message,
                 'options': options
             }
-            logger.debug('Step %s is not cached. Calling to %s...', step_id, url)
+            logger.debug('Step %7s is not cached. Executing...', step_id)
             async with session.post(url, json=inputs) as response:
                 message_text = await response.text()
             message = json.loads(message_text)
@@ -59,6 +59,7 @@ async def queue_job(arg):
     actions = arg['actions']
     input_id = hash_message(message)
     job_id = get_job_id(input_id, actions)
+    logger.debug("Received job %7s.", job_id)
     with open(os.path.join(CACHE_DIR, job_id + '.json'), 'w') as f:
         json.dump({
             'message_id': input_id,
@@ -71,14 +72,13 @@ async def queue_job(arg):
     )
     if r.exists(job_id):
         output_id = r.get(job_id)
-        logger.debug('Looking for message %s...', output_id)
         dir_contents = os.listdir(CACHE_DIR)
         filename = output_id + '.json'
         if filename in dir_contents:
-            logger.debug('Result of job %s exists. Skipping...', job_id)
+            logger.debug('Result of %7s is cached. Skipping...', job_id)
             return job_id
 
-    logger.debug('Queueing execution of %s...', job_id)
+    logger.debug('Result of %7s is not cached. Queueing...', job_id)
     asyncio.create_task(run_job(arg, job_id))
     return job_id
 
