@@ -13,6 +13,7 @@ services:
       context: .
     environment:
       - REDIS_HOST=cache_map
+      - USE_CORS=true
     ports:
       - "8081:8081"
 
