@@ -42,16 +42,18 @@ async def test_hermes(cli):
         ]
     }
 
-    # run 1-action job
-    response = await cli.post('/run', json=test_input)
-    job_id = await response.text()
-
-    # wait for job to finish
+    # get cache
     r = redis.Redis(
         host=os.environ['REDIS_HOST'],
         port=6379,
         decode_responses=True,
     )
+
+    # run 1-action job
+    response = await cli.post('/run', json=test_input)
+    job_id = await response.text()
+
+    # wait for job to finish
     while r.get(job_id) is None:
         await asyncio.sleep(1)
 
@@ -68,11 +70,6 @@ async def test_hermes(cli):
     job_id = await response.text()
 
     # wait for job to finish
-    r = redis.Redis(
-        host=os.environ['REDIS_HOST'],
-        port=6379,
-        decode_responses=True,
-    )
     while r.get(job_id) is None:
         await asyncio.sleep(0.1)
 
