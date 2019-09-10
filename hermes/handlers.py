@@ -22,7 +22,11 @@ async def run(request):
 async def get_result(request):
     """Fetch result of pipeline."""
     job_id = request.match_info['job_id']
-    r = redis.Redis(decode_responses=True)
+    r = redis.Redis(
+        host=os.environ['REDIS_HOST'],
+        port=6379,
+        decode_responses=True,
+    )
     if not r.exists(job_id):
         return web.HTTPNotFound(text='Results are unavailable.')
     output_id = r.get(job_id)

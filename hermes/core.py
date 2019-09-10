@@ -19,7 +19,11 @@ async def run_job(body, job_id):
     logger.debug('Executing job %s...', job_id)
     message = body['message']
     message_id = hash_message(message)
-    r = redis.Redis(decode_responses=True)
+    r = redis.Redis(
+        host=os.environ['REDIS_HOST'],
+        port=6379,
+        decode_responses=True,
+    )
     async with aiohttp.ClientSession() as session:
         for action in body['actions']:
             step_id = get_job_id(message_id, action)
@@ -60,7 +64,11 @@ async def queue_job(arg):
             'message_id': input_id,
             'actions': actions
         }, f, indent=4)
-    r = redis.Redis(decode_responses=True)
+    r = redis.Redis(
+        host=os.environ['REDIS_HOST'],
+        port=6379,
+        decode_responses=True,
+    )
     if r.exists(job_id):
         output_id = r.get(job_id)
         logger.debug('Looking for message %s...', output_id)

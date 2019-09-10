@@ -47,7 +47,11 @@ async def test_hermes(cli):
     job_id = await response.text()
 
     # wait for job to finish
-    r = redis.Redis(decode_responses=True)
+    r = redis.Redis(
+        host=os.environ['REDIS_HOST'],
+        port=6379,
+        decode_responses=True,
+    )
     while r.get(job_id) is None:
         await asyncio.sleep(1)
 
@@ -64,7 +68,11 @@ async def test_hermes(cli):
     job_id = await response.text()
 
     # wait for job to finish
-    r = redis.Redis(decode_responses=True)
+    r = redis.Redis(
+        host=os.environ['REDIS_HOST'],
+        port=6379,
+        decode_responses=True,
+    )
     while r.get(job_id) is None:
         await asyncio.sleep(0.1)
 
@@ -108,7 +116,11 @@ async def test_lost(cli):
     await run_job(test_input, job_id)
 
     # remove result file
-    r = redis.Redis(decode_responses=True)
+    r = redis.Redis(
+        host=os.environ['REDIS_HOST'],
+        port=6379,
+        decode_responses=True,
+    )
     result_id = r.get(job_id)
     os.remove(os.path.join(CACHE_DIR, result_id + '.json'))
 
@@ -137,7 +149,11 @@ async def test_job_cache(cli):
     job_id = await response.text()
 
     # wait for job to finish
-    r = redis.Redis(decode_responses=True)
+    r = redis.Redis(
+        host=os.environ['REDIS_HOST'],
+        port=6379,
+        decode_responses=True,
+    )
     while r.get(job_id) is None:
         await asyncio.sleep(1)
 

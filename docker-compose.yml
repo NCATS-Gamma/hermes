@@ -11,6 +11,8 @@ services:
     image: hermes
     build:
       context: .
+    environment:
+      - REDIS_HOST=cache_map
     ports:
       - "8081:8081"
 
