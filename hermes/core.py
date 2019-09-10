@@ -49,8 +49,9 @@ async def run_job(body, job_id):
             message_id = hash_message(message)
             r.set(step_id, message_id)
     r.set(job_id, message_id)
-    with open(os.path.join(CACHE_DIR, message_id + '.json'), 'w') as f:
-        json.dump(message, f, indent=4)
+    if message is not None:
+        with open(os.path.join(CACHE_DIR, message_id + '.json'), 'w') as f:
+            json.dump(message, f, indent=4)
 
 
 async def queue_job(arg):
