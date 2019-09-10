@@ -8,7 +8,7 @@ from aiohttp import web
 from hermes.handlers import run, get_result, get_job
 
 # Set up default logger.
-with pkg_resources.open_text('hermes', 'logging.yaml') as f:
+with pkg_resources.open_text('hermes', 'logging.yml') as f:
     config = yaml.safe_load(f.read())
 logging.config.dictConfig(config)
 
