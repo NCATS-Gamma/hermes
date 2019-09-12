@@ -15,7 +15,7 @@ services:
       - REDIS_HOST=cache_map
       - USE_CORS=true
     ports:
-      - "8081:8081"
+      - "4878:4878"
 
   swagger:
     container_name: swagger
@@ -26,4 +26,4 @@ services:
       - BASE_URL=/apidocs/
       - SWAGGER_JSON=/specs/openapi.yml
     ports:
-      - "8080:8080"
+      - "4888:8080"
